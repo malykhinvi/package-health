@@ -19,6 +19,7 @@
   ],
   "author": "malykhinvi",
   "license": "MIT",
+  "bin": "./index.js",
   "bugs": {
     "url": "https://github.com/malykhinvi/package-health/issues"
   },
