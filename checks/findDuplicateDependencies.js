@@ -5,7 +5,7 @@ module.exports = ({ packageLockJson, OK, ERROR }) => {
 
   const traverseDependency = (name, dependency) => {
     dependenciesMap[name] = dependenciesMap[name] || new Set();
-    dependenciesMap[name].add(`${dependency.dev ? '' : 'PROD - '}${dependency.version}`);
+    dependenciesMap[name].add(dependency.version);
     if (dependency.dependencies) {
       Object.keys(dependency.dependencies).forEach(name =>
         traverseDependency(name, dependency.dependencies[name])
@@ -36,7 +36,7 @@ module.exports = ({ packageLockJson, OK, ERROR }) => {
   const result = {};
   if (duplicateDependencies.length > 0) {
     result.status = ERROR;
-    result.message = "the following duplicate dependencies found in the tree:";
+    result.message = `the following duplicate dependencies found in the tree(${duplicateDependencies.length}):`;
     duplicateDependencies.forEach(dependency => {
       result.message += `\n\t"${dependency}": ${JSON.stringify(
         Array.from(dependenciesMap[dependency])
