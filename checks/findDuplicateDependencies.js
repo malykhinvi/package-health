@@ -2,10 +2,17 @@ const fs = require("fs");
 
 module.exports = ({ packageLockJson, OK, ERROR }) => {
   const dependenciesMap = {};
+  const requiresMap = {};
 
   const traverseDependency = (name, dependency) => {
     dependenciesMap[name] = dependenciesMap[name] || new Set();
     dependenciesMap[name].add(dependency.version);
+    if (dependency.requires) {
+      Object.keys(dependency.requires).forEach(requireName => {
+        requiresMap[requireName] = requiresMap[requireName] || new Set();
+        requiresMap[requireName].add(dependency.requires[requireName]);
+      });
+    }
     if (dependency.dependencies) {
       Object.keys(dependency.dependencies).forEach(name =>
         traverseDependency(name, dependency.dependencies[name])
@@ -36,11 +43,17 @@ module.exports = ({ packageLockJson, OK, ERROR }) => {
   const result = {};
   if (duplicateDependencies.length > 0) {
     result.status = ERROR;
-    result.message = `the following duplicate dependencies found in the tree(${duplicateDependencies.length}):`;
+    result.message = `the following duplicate dependencies found in the tree(${
+      duplicateDependencies.length
+    }):`;
     duplicateDependencies.forEach(dependency => {
-      result.message += `\n\t"${dependency}": ${JSON.stringify(
+      const installedVersions = JSON.stringify(
         Array.from(dependenciesMap[dependency])
-      )}`;
+      );
+      const requiredVersions = JSON.stringify(
+        Array.from(requiresMap[dependency])
+      );
+      result.message += `\n\t"${dependency}":\n\t\t${installedVersions}\n\t\t${requiredVersions}`;
     });
   } else {
     result.status = OK;
