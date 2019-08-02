@@ -1,6 +1,7 @@
-const fs = require("fs");
+const fs = require('fs');
+const chalk = require('chalk');
 
-module.exports = ({ packageLockJson, OK, ERROR }) => {
+module.exports = ({packageLockJson, OK, ERROR}) => {
   const dependenciesMap = {};
   const requiresMap = {};
 
@@ -49,17 +50,13 @@ module.exports = ({ packageLockJson, OK, ERROR }) => {
       duplicateDependencies.length
     }):`;
     duplicateDependencies.forEach(dependency => {
-      const installedVersions = JSON.stringify(
-        Array.from(dependenciesMap[dependency])
-      );
-      const requiredVersions = JSON.stringify(
-        Array.from(requiresMap[dependency])
-      );
-      result.message += `\n\t"${dependency}":\n\t\t${installedVersions}\n\t\t${requiredVersions}`;
+      const installedVersions = Array.from(dependenciesMap[dependency]).map(d => `"${d}"`).join(', ');
+      const requiredVersions = Array.from(requiresMap[dependency]).map(r => `"${r}"`).join(', ');
+      result.message += `\n\t"${chalk.red(dependency)}":\n\t\t${installedVersions}\n\t\t${requiredVersions}`;
     });
   } else {
     result.status = OK;
-    result.message = "no duplicate dependencies found";
+    result.message = 'no duplicate dependencies found';
   }
   return result;
 };

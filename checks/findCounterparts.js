@@ -1,25 +1,34 @@
-const fs = require("fs");
+const fs = require('fs');
+const chalk = require('chalk');
 
 const counterparts = [
   ['webpack', 'rollup', 'parcel', 'browserify'],
   ['@angular/core', 'angular', 'vue', 'react'],
-  ['styled-components', 'styletron', 'radium', 'jss', 'glamorous', 'emotion', 'aphrodite'],
+  [
+    'styled-components',
+    'styletron',
+    'radium',
+    'jss',
+    'glamorous',
+    'emotion',
+    'aphrodite'
+  ],
   ['lodash', 'underscore'],
   ['redux', 'mobx'],
   ['react-router', '@reach/router'],
   ['rc-tooltip', 'react-tooltip'],
-  ['rc-slider', 'react-slider'],
+  ['rc-slider', 'react-slider']
 ];
 
 //TODO optimize index generation
 const counterpartsIndex = counterparts.reduce((index, group) => {
   group.forEach((member, i, array) => {
-    index[member] = array.filter(el => el !== member)
+    index[member] = array.filter(el => el !== member);
   });
   return index;
 }, {});
 
-module.exports = ({ packageLockJson, OK, ERROR }) => {
+module.exports = ({packageLockJson, OK, ERROR}) => {
   const dependencies = new Set();
   const foundCounterparts = new Set();
 
@@ -27,9 +36,13 @@ module.exports = ({ packageLockJson, OK, ERROR }) => {
     dependencies.add(name);
     const knownCounterparts = counterpartsIndex[name];
     if (knownCounterparts) {
-      const alreadyUsedCounterparts = knownCounterparts.filter(counterpart => dependencies.has(counterpart));
+      const alreadyUsedCounterparts = knownCounterparts.filter(counterpart =>
+        dependencies.has(counterpart)
+      );
       if (alreadyUsedCounterparts.length > 0) {
-        foundCounterparts.add(`${name} - ${alreadyUsedCounterparts.join(', ')}`);
+        foundCounterparts.add(
+          `${name} - ${alreadyUsedCounterparts.join(', ')}`
+        );
       }
     }
     if (dependency.dependencies) {
@@ -46,13 +59,13 @@ module.exports = ({ packageLockJson, OK, ERROR }) => {
   const result = {};
   if (foundCounterparts.size > 0) {
     result.status = ERROR;
-    result.message = "the following counterparts found:";
+    result.message = 'the following counterparts found:';
     foundCounterparts.forEach(counterpart => {
-      result.message += `\n\t${counterpart}`;
+      result.message += chalk.red(`\n\t${counterpart}`);
     });
   } else {
     result.status = OK;
-    result.message = "no counterparts found";
+    result.message = 'no counterparts found';
   }
   return result;
 };
