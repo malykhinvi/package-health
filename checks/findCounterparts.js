@@ -28,7 +28,7 @@ const counterpartsIndex = counterparts.reduce((index, group) => {
   return index;
 }, {});
 
-module.exports = ({packageLockJson, OK, ERROR}) => {
+module.exports = ({packageLockJson, PASS, FAIL}) => {
   const dependencies = new Set();
   const foundCounterparts = new Set();
 
@@ -58,13 +58,13 @@ module.exports = ({packageLockJson, OK, ERROR}) => {
 
   const result = {};
   if (foundCounterparts.size > 0) {
-    result.status = ERROR;
+    result.status = FAIL;
     result.message = 'the following counterparts found:';
     foundCounterparts.forEach(counterpart => {
       result.message += chalk.red(`\n\t${counterpart}`);
     });
   } else {
-    result.status = OK;
+    result.status = PASS;
     result.message = 'no counterparts found';
   }
   return result;

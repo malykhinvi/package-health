@@ -1,7 +1,7 @@
 const fs = require('fs');
 const chalk = require('chalk');
 
-module.exports = ({packageLockJson, OK, ERROR}) => {
+module.exports = ({packageLockJson, PASS, FAIL}) => {
   const dependenciesMap = {};
   const requiresMap = {};
 
@@ -45,7 +45,7 @@ module.exports = ({packageLockJson, OK, ERROR}) => {
 
   const result = {};
   if (duplicateDependencies.length > 0) {
-    result.status = ERROR;
+    result.status = FAIL;
     result.message = `the following duplicate dependencies found in the tree(${
       duplicateDependencies.length
     }):`;
@@ -55,7 +55,7 @@ module.exports = ({packageLockJson, OK, ERROR}) => {
       result.message += `\n\t"${chalk.red(dependency)}":\n\t\t${installedVersions}\n\t\t${requiredVersions}`;
     });
   } else {
-    result.status = OK;
+    result.status = PASS;
     result.message = 'no duplicate dependencies found';
   }
   return result;
