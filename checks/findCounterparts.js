@@ -2,7 +2,13 @@ const fs = require("fs");
 
 const counterparts = [
   ['webpack', 'rollup', 'parcel', 'browserify'],
-  ['angular', 'vue', 'react'],
+  ['@angular/core', 'angular', 'vue', 'react'],
+  ['styled-components', 'styletron', 'radium', 'jss', 'glamorous', 'emotion', 'aphrodite'],
+  ['lodash', 'underscore'],
+  ['redux', 'mobx'],
+  ['react-router', '@reach/router'],
+  ['rc-tooltip', 'react-tooltip'],
+  ['rc-slider', 'react-slider'],
 ];
 
 //TODO optimize index generation
