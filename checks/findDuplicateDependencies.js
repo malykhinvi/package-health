@@ -6,17 +6,19 @@ module.exports = ({ packageLockJson, OK, ERROR }) => {
 
   const traverseDependency = (name, dependency) => {
     dependenciesMap[name] = dependenciesMap[name] || new Set();
-    dependenciesMap[name].add(dependency.version);
-    if (dependency.requires) {
-      Object.keys(dependency.requires).forEach(requireName => {
-        requiresMap[requireName] = requiresMap[requireName] || new Set();
-        requiresMap[requireName].add(dependency.requires[requireName]);
-      });
-    }
-    if (dependency.dependencies) {
-      Object.keys(dependency.dependencies).forEach(name =>
-        traverseDependency(name, dependency.dependencies[name])
-      );
+    if (!dependency.dev) {
+      dependenciesMap[name].add(dependency.version);
+      if (dependency.requires) {
+        Object.keys(dependency.requires).forEach(requireName => {
+          requiresMap[requireName] = requiresMap[requireName] || new Set();
+          requiresMap[requireName].add(dependency.requires[requireName]);
+        });
+      }
+      if (dependency.dependencies) {
+        Object.keys(dependency.dependencies).forEach(name =>
+          traverseDependency(name, dependency.dependencies[name])
+        );
+      }
     }
   };
 
