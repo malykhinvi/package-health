@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/malykhinvi/package-health#readme",
   "dependencies": {
-    "chalk": "^2.4.2"
+    "chalk": "^2.4.2",
+    "semver": "^6.3.0"
   }
 }

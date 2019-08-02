@@ -1,6 +1,3 @@
-const fs = require('fs');
-const chalk = require('chalk');
-
 const counterparts = [
   ['webpack', 'rollup', 'parcel', 'browserify'],
   ['@angular/core', 'angular', 'vue', 'react'],
@@ -61,7 +58,7 @@ module.exports = ({packageLockJson, PASS, FAIL}) => {
     result.status = FAIL;
     result.message = 'the following counterparts found:';
     foundCounterparts.forEach(counterpart => {
-      result.message += chalk.red(`\n\t${counterpart}`);
+      result.message += `\n\t${counterpart}`;
     });
   } else {
     result.status = PASS;

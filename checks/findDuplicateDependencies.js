@@ -1,5 +1,5 @@
-const fs = require('fs');
 const chalk = require('chalk');
+const semver = require('semver');
 
 module.exports = ({packageLockJson, PASS, FAIL}) => {
   const dependenciesMap = {};
@@ -50,9 +50,24 @@ module.exports = ({packageLockJson, PASS, FAIL}) => {
       duplicateDependencies.length
     }):`;
     duplicateDependencies.forEach(dependency => {
-      const installedVersions = Array.from(dependenciesMap[dependency]).map(d => `"${d}"`).join(', ');
-      const requiredVersions = Array.from(requiresMap[dependency]).map(r => `"${r}"`).join(', ');
-      result.message += `\n\t"${chalk.red(dependency)}":\n\t\t${installedVersions}\n\t\t${requiredVersions}`;
+      const installedVersions = Array.from(dependenciesMap[dependency]);
+      const requiredVersions = Array.from(requiresMap[dependency]);
+      const installedVersionsStr = installedVersions
+        .map(d => `"${d}"`)
+        .join(', ');
+      const requiredVersionsStr = requiredVersions
+        .map(r => `"${r}"`)
+        .join(', ');
+      const isSameMajorInstalled = installedVersions.every(
+        v => semver.major(v) === semver.major(installedVersions[0])
+      );
+      const versionHint = isSameMajorInstalled
+        ? chalk.green('same major version')
+        : chalk.red('different major versions');
+      result.message +=
+        `\n\t"${dependency}":` +
+        `\n\t\t${installedVersionsStr} - ${versionHint}` +
+        `\n\t\t${requiredVersionsStr}`;
     });
   } else {
     result.status = PASS;
