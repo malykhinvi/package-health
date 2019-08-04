@@ -1,21 +1,4 @@
-const counterparts = [
-  ['webpack', 'rollup', 'parcel', 'browserify'],
-  ['@angular/core', 'angular', 'vue', 'react'],
-  [
-    'styled-components',
-    'styletron',
-    'radium',
-    'jss',
-    'glamorous',
-    'emotion',
-    'aphrodite'
-  ],
-  ['lodash', 'underscore'],
-  ['redux', 'mobx'],
-  ['react-router', '@reach/router'],
-  ['rc-tooltip', 'react-tooltip'],
-  ['rc-slider', 'react-slider']
-];
+const counterparts = require('./counterparts');
 
 //TODO optimize index generation
 const counterpartsIndex = counterparts.reduce((index, group) => {
