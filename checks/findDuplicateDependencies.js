@@ -1,9 +1,12 @@
 const chalk = require('chalk');
 const semver = require('semver');
 
-module.exports = ({packageLockJson, PASS, FAIL}) => {
+module.exports = ({packageJson, packageLockJson, PASS, FAIL}) => {
   const dependenciesMap = {};
   const requiresMap = {};
+  Object.keys(packageJson.dependencies).forEach(name => {
+    requiresMap[name] = new Set([packageJson.dependencies[name]]);
+  });
 
   const traverseDependency = (name, dependency) => {
     dependenciesMap[name] = dependenciesMap[name] || new Set();
@@ -58,17 +61,19 @@ module.exports = ({packageLockJson, PASS, FAIL}) => {
       const requiredVersionsStr = requiredVersions
         .map(r => `"${r}"`)
         .join(', ');
-      const isSameMajorInstalled = installedVersions.every(
-        v => semver.major(v) === semver.major(installedVersions[0])
-      );
-      const versionHint = isSameMajorInstalled
-        ? chalk.green('same major version')
-        : chalk.red('different major versions');
       result.message +=
         `\n\t"${dependency}":` +
-        `\n\t\t${installedVersionsStr} - ${versionHint}` +
+        `\n\t\t${installedVersionsStr}` +
         `\n\t\t${requiredVersionsStr}`;
     });
+    result.message += chalk.gray(
+      '\n' +
+      '\n To find out what packages cause duplicate dependencies to be installed run `npm ls package-name`' +
+      '\n There is no a correct way to handle duplicates for all possible cases.' +
+      '\n Be mindful during dependency update, a good practice is to update one depenency at a time.' +
+      '\n Run `npm dedupe` to remove duplicates and make dependencies tree flat.' +
+      '\n\n'
+    );
   } else {
     result.status = PASS;
     result.message = 'no duplicate dependencies found';
