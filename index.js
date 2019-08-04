@@ -15,9 +15,12 @@ const FAIL_BADGE = chalk.whiteBright.bgRed(' FAIL ');
 // Check if the package.json is readable
 try {
   fs.accessSync(PACKAGE_JSON_FILE, fs.constants.R_PASS);
-  console.log(PASS_BADGE + ' - package.json found');
 } catch (err) {
-  console.log(FAIL_BADGE + ' - package.json not found');
+  console.log(
+    chalk.red(
+      'The `package-health` command should be called in the root of package, in the same directory as package.json'
+    )
+  );
   process.exit(1);
 }
 
@@ -48,7 +51,9 @@ checks.forEach(check => {
   if (success && result.status === FAIL) {
     success = false;
   }
-  console.log(`${result.status === PASS ? PASS_BADGE : FAIL_BADGE} - ${result.message}`);
+  console.log(
+    `${result.status === PASS ? PASS_BADGE : FAIL_BADGE} - ${result.message}`
+  );
 });
 
 process.exit(success ? 0 : 1);
