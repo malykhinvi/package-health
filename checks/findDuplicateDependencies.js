@@ -79,9 +79,9 @@ const report = (result) => {
     });
     message += '' +
       '\n' +
-      '\n To find out what packages cause duplicate dependencies to be installed run `npm ls package-name`' +
+      '\n To find out what packages cause duplicate dependencies to be installed, run `npm ls package-name`' +
       '\n There is no a correct way to handle duplicates for all possible cases.' +
-      '\n Be mindful during dependency update, a good practice is to update one depenency at a time.' +
+      '\n Be mindful during dependency update, a good practice is to update one dependency at a time.' +
       '\n Run `npm dedupe` to remove duplicates and make dependencies tree flat.' +
       '\n\n'
     ;
