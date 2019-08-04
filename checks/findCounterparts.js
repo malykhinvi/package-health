@@ -1,4 +1,5 @@
 const counterparts = require('./counterparts');
+const {FAIL, PASS} = require('../status');
 
 //TODO optimize index generation
 const counterpartsIndex = counterparts.reduce((index, group) => {
@@ -8,7 +9,7 @@ const counterpartsIndex = counterparts.reduce((index, group) => {
   return index;
 }, {});
 
-module.exports = ({packageLockJson, PASS, FAIL}) => {
+const run = ({packageLockJson}) => {
   const dependencies = new Set();
   const foundCounterparts = new Set();
 
@@ -21,7 +22,7 @@ module.exports = ({packageLockJson, PASS, FAIL}) => {
       );
       if (alreadyUsedCounterparts.length > 0) {
         foundCounterparts.add(
-          `${name} - ${alreadyUsedCounterparts.join(', ')}`
+          `${name}, ${alreadyUsedCounterparts.join(', ')}`
         );
       }
     }
@@ -36,16 +37,28 @@ module.exports = ({packageLockJson, PASS, FAIL}) => {
     traverseDependency(name, packageLockJson.dependencies[name])
   );
 
-  const result = {};
-  if (foundCounterparts.size > 0) {
-    result.status = FAIL;
-    result.message = 'the following counterparts found:';
-    foundCounterparts.forEach(counterpart => {
-      result.message += `\n\t${counterpart}`;
+  return {
+    status: foundCounterparts.size > 0 ? FAIL : PASS,
+    data: {
+      foundCounterparts
+    }
+  };
+};
+
+const report = (result) => {
+  let message = '';
+  if (result.status === FAIL) {
+    message += `\n The following counterparts found (${result.data.foundCounterparts.size}):`;
+    result.data.foundCounterparts.forEach(counterpart => {
+      message += `\n - ${counterpart}`;
     });
-  } else {
-    result.status = PASS;
-    result.message = 'no counterparts found';
+    message += '\n\n';
   }
-  return result;
+  return message;
+};
+
+module.exports = {
+  description: 'Counterparts',
+  run,
+  report
 };

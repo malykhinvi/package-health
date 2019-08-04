@@ -3,16 +3,12 @@
 const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
+const {FAIL, PASS} = require('./status');
 
 const WORK_DIR = process.cwd();
 const PACKAGE_JSON_FILE = path.join(WORK_DIR, 'package.json');
 const PACKAGE_LOCK_JSON_FILE = path.join(WORK_DIR, 'package-lock.json');
-const FAIL = Symbol('FAIL');
-const PASS = Symbol('PASS');
-const PASS_BADGE = chalk.whiteBright.bgGreen(' PASS ');
-const FAIL_BADGE = chalk.whiteBright.bgRed(' FAIL ');
 
-// Check if the package.json is readable
 try {
   fs.accessSync(PACKAGE_JSON_FILE, fs.constants.R_PASS);
 } catch (err) {
@@ -24,18 +20,16 @@ try {
   process.exit(1);
 }
 
-// Check if the package-lock.json is readable
 try {
   fs.accessSync(PACKAGE_LOCK_JSON_FILE, fs.constants.R_PASS);
-  console.log(PASS_BADGE + ' - package-lock.json found');
 } catch (err) {
-  console.log(FAIL_BADGE + ' - package-lock.json not found');
+  chalk.red(
+    '`package-lock.json` file is not found. It is required for most of health checks.'
+  );
   process.exit(1);
 }
 
 const config = {
-  PASS,
-  FAIL,
   packageJson: JSON.parse(fs.readFileSync(PACKAGE_JSON_FILE)),
   packageLockJson: JSON.parse(fs.readFileSync(PACKAGE_LOCK_JSON_FILE))
 };
@@ -47,13 +41,19 @@ const checks = [
 
 let success = true;
 checks.forEach(check => {
-  const result = check(config);
+  const result = check.run(config);
   if (success && result.status === FAIL) {
     success = false;
   }
-  console.log(
-    `${result.status === PASS ? PASS_BADGE : FAIL_BADGE} - ${result.message}`
-  );
+  const report = check.report(result);
+  const badge =
+    result.status === PASS
+      ? chalk.whiteBright.bgGreen(' PASS ')
+      : chalk.whiteBright.bgRed(' FAIL ');
+  console.log(`${badge} - ${check.description}`);
+  if (report) {
+    console.log(chalk.gray(report));
+  }
 });
 
 process.exit(success ? 0 : 1);
