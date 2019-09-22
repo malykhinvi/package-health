@@ -52,7 +52,7 @@ checks.forEach(check => {
       : chalk.whiteBright.bgRed(' FAIL ');
   console.log(`${badge} - ${check.description}`);
   if (report) {
-    console.log(chalk.gray(report));
+    console.log(report);
   }
 });
 

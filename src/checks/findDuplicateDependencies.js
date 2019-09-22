@@ -74,8 +74,8 @@ const report = (result) => {
         .join(', ');
       message +=
         `\n "${dependency}":` +
-        `\n\t${installedVersionsStr}` +
-        `\n\t${requiredVersionsStr}`;
+        `\n\t - Installed: ${installedVersionsStr}` +
+        `\n\t - Required:  ${requiredVersionsStr}`;
     });
     message += '' +
       '\n' +
